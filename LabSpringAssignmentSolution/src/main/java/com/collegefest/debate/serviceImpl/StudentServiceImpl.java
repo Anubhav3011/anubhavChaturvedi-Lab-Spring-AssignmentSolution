@@ -36,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public List<Student> searchBy(String name, String department, String country) {
+	public List<Student> findByNameContainsAndDepartmentContainsAndCountryContainsAllIgnoreCase(String name, String department, String country) {
 		return studentRepository.findByNameContainsAndDepartmentContainsAndCountryContainsAllIgnoreCase(name,
 				department, country);
 	}

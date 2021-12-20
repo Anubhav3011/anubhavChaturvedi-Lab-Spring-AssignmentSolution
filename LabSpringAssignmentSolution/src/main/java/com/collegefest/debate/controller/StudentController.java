@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.collegefest.debate.entity.Student;
-import com.collegefest.debate.repository.StudentRepository;
+import com.collegefest.debate.service.StudentService;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,11 +20,11 @@ import org.springframework.web.servlet.ModelAndView;
 public class StudentController {
 
 	@Autowired
-	private StudentRepository studentRepository;
+	private StudentService studentService;
 
 	@RequestMapping("/list")
 	public String listStudents(Model model) {
-		List<Student> students = studentRepository.findAll();
+		List<Student> students = studentService.findAll();
 		model.addAttribute("Students", students);
 		return "list-students";
 	}
@@ -38,7 +38,7 @@ public class StudentController {
 
 	@RequestMapping("/show-update-form")
 	public String showUpdateForm(@RequestParam("studentId") int id, Model model) {
-		Student student = studentRepository.findById(id).get();
+		Student student = studentService.findById(id);
 		model.addAttribute("Student", student);
 		return "edit-student";
 	}
@@ -48,7 +48,7 @@ public class StudentController {
 			@RequestParam("department") String department, @RequestParam("country") String country) {
 		Student student;
 		if (id != 0) {
-			student = studentRepository.findById(id).get();
+			student = studentService.findById(id);
 			student.setName(name);
 			student.setDepartment(department);
 			student.setCountry(country);
@@ -58,14 +58,14 @@ public class StudentController {
 			student.setDepartment(department);
 			student.setCountry(country);
 		}
-		studentRepository.save(student);
+		studentService.save(student);
 		return "redirect:/students/list";
 
 	}
 
 	@RequestMapping("/delete")
-	public String delete(@RequestParam("studentId") int theId) {
-		studentRepository.deleteById(theId);
+	public String delete(@RequestParam("studentId") int id) {
+		studentService.deleteById(id);
 		return "redirect:/students/list";
 	}
 
@@ -75,7 +75,7 @@ public class StudentController {
 		if (name.trim().isEmpty() && department.trim().isEmpty() && country.trim().isEmpty()) {
 			return "redirect:/students/list";
 		} else {
-			List<Student> student = studentRepository
+			List<Student> student = studentService
 					.findByNameContainsAndDepartmentContainsAndCountryContainsAllIgnoreCase(name, department, country);
 			model.addAttribute("Students", student);
 			model.addAttribute("Name", name);
